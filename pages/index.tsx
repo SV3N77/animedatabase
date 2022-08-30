@@ -1,11 +1,13 @@
 import Head from "next/head";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { AnimeQuery } from "../utils/AnimeQuery";
 
 async function getAnimeQuery(query: string) {
   const URL = `https://kitsu.io/api/edge/anime?filter[text]=${query}`;
   const { data } = await fetch(URL).then((res) => res.json());
-  return data;
+
+  return data as [AnimeQuery];
 }
 
 function Home() {
@@ -72,10 +74,9 @@ function Home() {
             </button>
           </div>
         </form>
-
         <section className="mt-4 grid grid-cols-2 gap-4">
-          {search.data?.map((anime: any) => (
-            <AnimeCard anime={anime} />
+          {search.data?.map((attribute) => (
+            <AnimeCard key={attribute.id} anime={attribute} />
           ))}
         </section>
       </section>
@@ -86,9 +87,12 @@ function Home() {
 export default Home;
 
 // internal components
-type AnimeCardProps = {};
 
-function AnimeCard({ anime }: any) {
+type AnimeCardProps = {
+  anime: AnimeQuery;
+};
+
+function AnimeCard({ anime }: AnimeCardProps) {
   return (
     <div className="flex h-64 gap-3 rounded-md shadow-lg">
       <div
@@ -104,13 +108,18 @@ function AnimeCard({ anime }: any) {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-between p-2">
-          <div className="text-sm">
-            {anime.attributes.episodeCount} episodes
+      <div className="flex grow flex-col gap-2">
+        <div className="flex justify-end gap-3 p-2 text-sm">
+          <div className="">
+            {anime.attributes.averageRating ? (
+              <div>{anime.attributes.averageRating} Average Rating</div>
+            ) : null}
           </div>
+          <div className="">{anime.attributes.episodeCount} episodes</div>
         </div>
-        <div className="overflow-auto text-sm">{anime.attributes.synopsis}</div>
+        <div className="overflow-auto p-1 text-sm">
+          {anime.attributes.synopsis}
+        </div>
       </div>
     </div>
   );
