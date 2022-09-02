@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AnimeQuery } from "../utils/AnimeQuery";
 import Link from "next/link";
 
-async function getAnimeQuery(query: string) {
+async function getAnimes(query: string) {
   const URL = `https://kitsu.io/api/edge/anime?filter[text]=${query}`;
   const { data } = await fetch(URL).then((res) => res.json());
   return data as AnimeQuery[];
@@ -15,7 +15,7 @@ function Home() {
 
   const search = useQuery({
     queryKey: ["search", query],
-    queryFn: () => getAnimeQuery(query),
+    queryFn: () => getAnimes(query),
     enabled: query.length > 3,
     keepPreviousData: true,
   });
@@ -97,10 +97,9 @@ function AnimeCard({ anime }: AnimeCardProps) {
     <div className="flex h-64 rounded-md bg-neutral-50 shadow-lg">
       <Link
         href={{
-          pathname: "/anime/[id]",
-          query: { id: anime.id },
+          pathname: "/anime/[slug]",
+          query: { slug: anime.attributes.slug },
         }}
-        as={`/anime/${anime.id}`}
       >
         <div
           className="relative flex aspect-[3/4] h-full flex-row bg-cover"
