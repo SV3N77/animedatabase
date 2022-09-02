@@ -33,22 +33,41 @@ export default function index({
     <section className="container mx-auto mb-8">
       <div className="flex flex-col gap-4">
         <Image
-          className="aspect-[16/4]"
+          className="aspect-[16/3]"
           src={anime.attributes.coverImage.large}
           width={1536}
-          height={384}
+          height={288}
+          priority
         />
-        <div className="flex gap-2">
-          <div className="flex flex-col">
+        <div className="flex gap-4">
+          <div className="flex shrink-0 flex-col gap-4">
             <Image
               className="aspect-[3/4]"
               src={anime.attributes.posterImage.small}
-              width={600}
-              height={250}
+              width={284}
+              height={380}
+              priority
             />
-            <div className="text-xl">{anime.attributes.canonicalTitle}</div>
+            <div className="text-2xl">{anime.attributes.canonicalTitle}</div>
+            <div className="rounded-sm bg-slate-50 p-2 shadow-md">
+              <div className="text-xl">Anime Details</div>
+              <div className="flex flex-col gap-2 text-base">
+                <div className="flex justify-between">
+                  <div className="">English</div>
+                  <div>{anime.attributes.titles.en}</div>
+                </div>
+                <div className="flex justify-between">
+                  <div className="">Japanese</div>
+                  <div>{anime.attributes.titles.en_jp}</div>
+                </div>
+                <div className="flex justify-between">
+                  <div className="">Japranese (Romaji)</div>
+                  <div>{anime.attributes.titles.ja_jp}</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="text-md">{anime.attributes.description}</div>
+          <div className="text-base">{anime.attributes.description}</div>
         </div>
       </div>
     </section>

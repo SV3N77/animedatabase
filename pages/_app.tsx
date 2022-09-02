@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <div className="grow bg-neutral-100">
+      <div className="grow bg-neutral-100 pb-10">
         <QueryClientProvider client={client}>
           <Component {...pageProps} />
         </QueryClientProvider>
