@@ -1,6 +1,10 @@
-import { GetStaticPropsContext, InferGetStaticPropsType } from "next";
+import { GetStaticPropsContext } from "next";
 import Image from "next/future/image";
-import { AnimeQuery } from "../../utils/AnimeQuery";
+import { AnimeQuery, GenresArray } from "../../utils/AnimeQuery";
+
+type AnimeProps = {
+  anime: AnimeQuery;
+};
 
 async function getAnime(slug: string) {
   const URL = `https://kitsu.io/api/edge/anime?filter[slug]=${slug}&include=genres`;
@@ -31,9 +35,11 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
   };
 }
 
-export default function index({
-  anime,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function index({ anime }: AnimeProps) {
+  const start = new Date(anime.attributes.startDate).toDateString();
+  const startDate = start.split(" ").slice(1, 4).join(" ");
+  const end = new Date(anime.attributes.endDate).toDateString();
+  const endDate = end.split(" ").slice(1, 4).join(" ");
   return (
     <section className="container mx-auto mb-8">
       <div className="flex flex-col gap-4">
@@ -47,7 +53,7 @@ export default function index({
         <div className="flex gap-4">
           <div className="flex shrink-0 flex-col gap-4">
             <Image
-              className="aspect-[3/4]"
+              className="mx-auto aspect-[3/4]"
               src={anime.attributes.posterImage.small}
               width={284}
               height={380}
@@ -58,7 +64,7 @@ export default function index({
                 {anime.attributes.canonicalTitle}
               </div>
               <div className="text-xl">Anime Details</div>
-              <div className="flex flex-col gap-2 text-base">
+              <div className="flex flex-col gap-2 text-sm">
                 <div className="flex justify-between">
                   <div className="">English</div>
                   <div>{anime.attributes.titles.en}</div>
@@ -73,7 +79,7 @@ export default function index({
                 </div>
                 <div className="flex justify-between">
                   <div className="">Type</div>
-                  <div>{anime.attributes.subtype}</div>
+                  <div>{anime.attributes.showType}</div>
                 </div>
                 <div className="flex justify-between">
                   <div className="">Episodes</div>
@@ -86,8 +92,7 @@ export default function index({
                 <div className="flex justify-between">
                   <div className="">Aired</div>
                   <div>
-                    {anime.attributes.startDate} to
-                    {anime.attributes.endDate}
+                    {startDate} to {endDate}
                   </div>
                 </div>
                 {anime.attributes.ageRatingGuide ? (
@@ -99,13 +104,16 @@ export default function index({
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 rounded-sm bg-slate-50 p-4 shadow-md">
             <div className="text-base">{anime.attributes.description}</div>
             <div className="flex gap-4">
-              {anime.genresArray.map((genre) => (
-                <div key={genre.id} className="p-1">
+              {anime.genresArray.map((genre: GenresArray) => (
+                <span
+                  key={genre.id}
+                  className="rounded-lg bg-emerald-50 p-1 shadow-sm"
+                >
                   {genre.attributes.name}
-                </div>
+                </span>
               ))}
             </div>
           </div>
