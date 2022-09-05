@@ -185,10 +185,10 @@ export type AnimeQuery = {
       };
     };
   };
-  genresArray: GenresArray[];
+  genresArray: Genre[];
 };
 
-export type GenresArray = {
+export type Genre = {
   id: string;
   type: string;
   links: {
@@ -200,5 +200,80 @@ export type GenresArray = {
     name: string;
     slug: string;
     description?: string;
+  };
+};
+
+export type Character = {
+  id: string;
+  type: string;
+  links: {
+    self: string;
+  };
+  attributes: {
+    createdAt: string;
+    updatedAt: string;
+    slug: string;
+    names: {
+      en: string;
+      ja_jp: string;
+    };
+    canonicalName: string;
+    otherNames: Array<string>;
+    name: string;
+    malId: number;
+    description: string;
+    image: {
+      tiny: string;
+      large: string;
+      small: string;
+      medium: string;
+      original: string;
+      meta: {
+        dimensions: {
+          tiny: {
+            width: number;
+            height: number;
+          };
+          large: {
+            width: number;
+            height: number;
+          };
+          small: {
+            width: number;
+            height: number;
+          };
+          medium: {
+            width: number;
+            height: number;
+          };
+        };
+      };
+    };
+  };
+  relationships: {
+    primaryMedia: {
+      links: {
+        self: string;
+        related: string;
+      };
+    };
+    castings: {
+      links: {
+        self: string;
+        related: string;
+      };
+    };
+    mediaCharacters: {
+      links: {
+        self: string;
+        related: string;
+      };
+    };
+    quotes: {
+      links: {
+        self: string;
+        related: string;
+      };
+    };
   };
 };
