@@ -5,6 +5,7 @@ import { format, parseISO } from "date-fns";
 
 type AnimeProps = {
   anime: AnimeQuery;
+  relatedAnime: AnimeQuery[];
   characters: Character[];
 };
 
@@ -23,6 +24,12 @@ async function getCharacters(id: string) {
   return included as Character[];
 }
 
+async function getRelated(id: string) {
+  const URL = `https://kitsu.io/api/edge/media-relationships?filter[source_id]=${id}&filter[source_type]=Anime&include=destination&page[limit]=4&sort=role`;
+  const { included } = await fetch(URL).then((res) => res.json());
+  return included as AnimeQuery[];
+}
+
 export function getStaticPaths() {
   return {
     paths: [],
@@ -34,18 +41,18 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
   const slug = ctx.params!.slug as string;
   const anime = await getAnime(slug);
   const characters = await getCharacters(anime.id);
-
+  const relatedAnime = await getRelated(anime.id);
   if (!anime) {
     return {
       notFound: true,
     } as const;
   }
   return {
-    props: { anime, characters },
+    props: { anime, characters, relatedAnime },
   };
 }
 
-export default function index({ anime, characters }: AnimeProps) {
+export default function index({ anime, characters, relatedAnime }: AnimeProps) {
   const startDate = format(parseISO(anime.attributes.startDate), "do MMM yyyy");
   const endDate = format(parseISO(anime.attributes.endDate), "do MMM yyyy");
 
@@ -127,20 +134,39 @@ export default function index({ anime, characters }: AnimeProps) {
                 ))}
               </div>
             </div>
-            <div className="flex flex-col">
-              {characters.map((character) => (
-                <div key={character.id} className="flex flex-col ">
-                  <Image
-                    className="aspect-[3/4]"
-                    src={character.attributes.image.original}
-                    width={72}
-                    height={96}
-                  />
-                  <div className="text-sm">
-                    {character.attributes.canonicalName}
+            <div className="flex flex-col gap-1">
+              <div className="text-xl">Characters</div>
+              <div className="flex gap-2">
+                {characters.map((character) => (
+                  <div key={character.id} className="flex w-20 flex-col">
+                    <Image
+                      className="aspect-[3/4]"
+                      src={character.attributes.image.original}
+                      width={72}
+                      height={96}
+                    />
+                    <div className="text-sm">
+                      {character.attributes.canonicalName}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              <div className="text-xl">Related Anime</div>
+              <div className="flex gap-2">
+                {relatedAnime.map((related) => (
+                  <div key={related.id} className="flex w-20 flex-col">
+                    <Image
+                      className="aspect-[3/4]"
+                      src={related.attributes.posterImage.original}
+                      width={72}
+                      height={96}
+                    />
+                    <div className="text-sm">
+                      {related.attributes.canonicalTitle}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
