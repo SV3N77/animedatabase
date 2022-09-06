@@ -1,7 +1,7 @@
 import { format, parseISO } from "date-fns";
 import { GetStaticPropsContext } from "next";
 import Link from "next/link";
-import { AnimeQuery, Character, Genre } from "../../utils/AnimeQuery";
+import { AnimeQuery, Character } from "../../utils/AnimeQuery";
 
 type AnimeProps = {
   anime: AnimeQuery;
@@ -53,7 +53,10 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
 
 export default function index({ anime, characters, relatedAnime }: AnimeProps) {
   const startDate = format(parseISO(anime.attributes.startDate), "do MMM yyyy");
-  const endDate = format(parseISO(anime.attributes.endDate), "do MMM yyyy");
+  let endDate;
+  if (anime.attributes.endDate) {
+    endDate = format(parseISO(anime.attributes.endDate), "do MMM yyyy");
+  }
 
   return (
     <section className="container mx-auto mb-8">
@@ -98,12 +101,18 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
                   <div className="">Status</div>
                   <div>{anime.attributes.status}</div>
                 </div>
-                <div className="flex justify-between">
-                  <div className="">Aired</div>
-                  <div>
-                    {startDate} to {endDate}
+                {anime.attributes.status === "current" ? (
+                  <div className="flex justify-between">
+                    <div className="">Airing</div> <div>Currently airing</div>
                   </div>
-                </div>
+                ) : (
+                  <div className="flex justify-between">
+                    <div className="">Aired</div>
+                    <div>
+                      {startDate} to {endDate}
+                    </div>
+                  </div>
+                )}
                 {anime.attributes.ageRatingGuide ? (
                   <div className="flex justify-between">
                     <div className="">Rating</div>
@@ -117,7 +126,7 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
             <div className="flex w-2/3 grow flex-col gap-4 text-base">
               {anime.attributes.description}
               <div className="flex gap-4">
-                {anime.genresArray.map((genre: Genre) => (
+                {anime.genresArray.map((genre) => (
                   <span
                     key={genre.id}
                     className="rounded-lg bg-emerald-50 p-1 shadow-sm"

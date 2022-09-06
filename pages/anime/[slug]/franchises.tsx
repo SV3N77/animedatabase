@@ -36,7 +36,7 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
     props: { anime, franchises },
   };
 }
-export default function characters({ anime, franchises }: FranchiseProps) {
+export default function franchises({ anime, franchises }: FranchiseProps) {
   return (
     <section className="container mx-auto py-8">
       <div className="flex flex-col gap-2">
@@ -47,10 +47,17 @@ export default function characters({ anime, franchises }: FranchiseProps) {
           {franchises.map((franchise) => (
             <div key={franchise.id} className="w-56">
               <Link
-                href={{
-                  pathname: "/anime/[slug]",
-                  query: { slug: franchise.attributes.slug },
-                }}
+                href={
+                  franchise.type === "anime"
+                    ? {
+                        pathname: "/anime/[slug]",
+                        query: { slug: franchise.attributes.slug },
+                      }
+                    : {
+                        pathname: "/manga/[slug]",
+                        query: { slug: franchise.attributes.slug },
+                      }
+                }
               >
                 <a>
                   <img
