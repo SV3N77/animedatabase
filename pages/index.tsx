@@ -1,8 +1,8 @@
-import Head from "next/head";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AnimeQuery } from "../utils/AnimeQuery";
+import Head from "next/head";
 import Link from "next/link";
+import { useState } from "react";
+import { AnimeQuery } from "../utils/AnimeQuery";
 
 async function getAnimes(query: string) {
   const URL = `https://kitsu.io/api/edge/anime?filter[text]=${query}`;
@@ -101,18 +101,20 @@ function AnimeCard({ anime }: AnimeCardProps) {
           query: { slug: anime.attributes.slug },
         }}
       >
-        <div
-          className="relative flex aspect-[3/4] h-full flex-row bg-cover"
-          style={{
-            backgroundImage: `url(${anime.attributes.posterImage.small})`,
-          }}
-        >
-          <div className="absolute inset-x-0 bottom-0 flex bg-black/50 p-2 backdrop-blur-md">
-            <div className="text-white">
-              <h2 className="text-md">{anime.attributes.canonicalTitle}</h2>
+        <a>
+          <div
+            className="relative flex aspect-[3/4] h-full flex-row bg-cover"
+            style={{
+              backgroundImage: `url(${anime.attributes.posterImage.small})`,
+            }}
+          >
+            <div className="absolute inset-x-0 bottom-0 flex bg-black/50 p-2 backdrop-blur-md">
+              <div className="text-white">
+                <h2 className="text-md">{anime.attributes.canonicalTitle}</h2>
+              </div>
             </div>
           </div>
-        </div>
+        </a>
       </Link>
       <div className="flex grow flex-col gap-2">
         <div className="flex justify-end gap-2 bg-emerald-50 px-4 py-3 text-sm">

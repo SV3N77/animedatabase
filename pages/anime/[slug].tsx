@@ -1,7 +1,8 @@
+import { format, parseISO } from "date-fns";
 import { GetStaticPropsContext } from "next";
 import Image from "next/future/image";
+import Link from "next/link";
 import { AnimeQuery, Character, Genre } from "../../utils/AnimeQuery";
-import { format, parseISO } from "date-fns";
 
 type AnimeProps = {
   anime: AnimeQuery;
@@ -134,7 +135,7 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
                 ))}
               </div>
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-3">
               <div className="text-xl">Characters</div>
               <div className="flex gap-2">
                 {characters.map((character) => (
@@ -151,6 +152,16 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
                   </div>
                 ))}
               </div>
+              <Link
+                href={{
+                  pathname: "/anime/[slug]/characters",
+                  query: { slug: anime.attributes.slug },
+                }}
+              >
+                <a className="text-neutral-400 underline hover:opacity-50 ">
+                  View All Characters
+                </a>
+              </Link>
               <div className="text-xl">Related Anime</div>
               <div className="flex gap-2">
                 {relatedAnime.map((related) => (
