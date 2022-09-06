@@ -1,6 +1,5 @@
 import { format, parseISO } from "date-fns";
 import { GetStaticPropsContext } from "next";
-import Image from "next/future/image";
 import Link from "next/link";
 import { AnimeQuery, Character, Genre } from "../../utils/AnimeQuery";
 
@@ -14,7 +13,6 @@ async function getAnime(slug: string) {
   const URL = `https://kitsu.io/api/edge/anime?filter[slug]=${slug}&include=genres`;
   const { data, included } = await fetch(URL).then((res) => res.json());
   let results = data[0] as AnimeQuery;
-
   results.genresArray = included;
   return results as AnimeQuery;
 }
@@ -60,21 +58,15 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
   return (
     <section className="container mx-auto mb-8">
       <div className="flex flex-col gap-4">
-        <Image
-          className="aspect-[18/3]"
+        <img
+          className="aspect-[18/3] w-full"
           src={anime.attributes.coverImage.large}
-          width={1536}
-          height={256}
-          priority
         />
         <div className="flex gap-4">
           <div className="flex shrink-0 flex-col gap-4">
-            <Image
-              className="mx-auto aspect-[3/4]"
+            <img
+              className="mx-auto aspect-[3/4] w-full"
               src={anime.attributes.posterImage.small}
-              width={284}
-              height={380}
-              priority
             />
             <div className="rounded-sm bg-slate-50 p-2 shadow-md">
               <div className="mb-4 text-2xl">
@@ -140,11 +132,9 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
               <div className="flex gap-2">
                 {characters.map((character) => (
                   <div key={character.id} className="flex w-20 flex-col">
-                    <Image
-                      className="aspect-[3/4]"
+                    <img
+                      className="aspect-[3/4] w-full"
                       src={character.attributes.image.original}
-                      width={72}
-                      height={96}
                     />
                     <div className="text-sm">
                       {character.attributes.canonicalName}
@@ -159,18 +149,16 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
                 }}
               >
                 <a className="text-neutral-400 underline hover:opacity-50 ">
-                  View All Characters
+                  View all characters
                 </a>
               </Link>
               <div className="text-xl">Related Anime</div>
               <div className="flex gap-2">
                 {relatedAnime.map((related) => (
                   <div key={related.id} className="flex w-20 flex-col">
-                    <Image
-                      className="aspect-[3/4]"
+                    <img
+                      className="aspect-[3/4] w-full"
                       src={related.attributes.posterImage.original}
-                      width={72}
-                      height={96}
                     />
                     <div className="text-sm">
                       {related.attributes.canonicalTitle}
@@ -178,6 +166,16 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
                   </div>
                 ))}
               </div>
+              <Link
+                href={{
+                  pathname: "/anime/[slug]/franchises",
+                  query: { slug: anime.attributes.slug },
+                }}
+              >
+                <a className="text-neutral-400 underline hover:opacity-50 ">
+                  View all in {anime.attributes.canonicalTitle}
+                </a>
+              </Link>
             </div>
           </div>
         </div>

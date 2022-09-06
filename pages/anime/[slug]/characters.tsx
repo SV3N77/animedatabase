@@ -1,8 +1,7 @@
 import { GetStaticPropsContext } from "next";
-import Image from "next/future/image";
 import { AnimeQuery, Character } from "../../../utils/AnimeQuery";
 
-type CharacterProps = { anime: AnimeQuery; allCharacters: Character[] };
+type CharacterProps = { anime: AnimeQuery; animeCharacters: Character[] };
 
 async function getAnime(slug: string) {
   const URL = `https://kitsu.io/api/edge/anime?filter[slug]=${slug}`;
@@ -26,16 +25,23 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
   const slug = ctx.params!.slug as string;
   const anime = await getAnime(slug);
   const allCharacters = await getAllCharacters(anime.id);
+  const animeCharacters = allCharacters.filter(
+    (character) => character.type === "characters"
+  );
+  const voiceActors = allCharacters.filter(
+    (character) => character.type === "people"
+  );
+
   if (!allCharacters) {
     return {
       notFound: true,
     } as const;
   }
   return {
-    props: { anime, allCharacters },
+    props: { anime, animeCharacters },
   };
 }
-export default function characters({ anime, allCharacters }: CharacterProps) {
+export default function characters({ anime, animeCharacters }: CharacterProps) {
   return (
     <section className="container mx-auto py-8">
       <div className="flex flex-col gap-2">
@@ -43,13 +49,11 @@ export default function characters({ anime, allCharacters }: CharacterProps) {
           {anime.attributes.canonicalTitle} Characters
         </h1>
         <div className="flex flex-wrap gap-6">
-          {allCharacters.map((character) => (
+          {animeCharacters.map((character) => (
             <div key={character.id} className="w-56">
-              <Image
-                className="aspect-[3/4]"
+              <img
+                className="aspect-[3/4] w-full"
                 src={character.attributes.image.original}
-                width={224}
-                height={288}
               />
               <div className="">{character.attributes.canonicalName}</div>
             </div>
