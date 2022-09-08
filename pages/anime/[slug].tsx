@@ -18,7 +18,7 @@ async function getAnime(slug: string) {
 }
 
 async function getCharacters(id: string) {
-  const URL = `https://kitsu.io/api/edge/castings?filter[media_id]=${id}&filter[media_type]=Anime&filter[is_character]=true&filter[language]=Japanese&include=character&page[limit]=4&sort=-featured`;
+  const URL = `https://kitsu.io/api/edge/castings?filter[media_id]=${id}&filter[media_type]=Anime&filter[is_character]=true&include=character&page[limit]=4&sort=-featured`;
   const { included } = await fetch(URL).then((res) => res.json());
   return included as Character[];
 }
@@ -52,8 +52,8 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
 }
 
 export default function index({ anime, characters, relatedAnime }: AnimeProps) {
-  const startDate = format(parseISO(anime.attributes.startDate), "do MMM yyyy");
   let endDate;
+  const startDate = format(parseISO(anime.attributes.startDate), "do MMM yyyy");
   if (anime.attributes.endDate) {
     endDate = format(parseISO(anime.attributes.endDate), "do MMM yyyy");
   }
@@ -71,11 +71,8 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
               className="mx-auto aspect-[3/4] w-full"
               src={anime.attributes.posterImage.small}
             />
-            <div className="rounded-sm bg-slate-50 p-2 shadow-md">
-              <div className="mb-4 text-2xl">
-                {anime.attributes.canonicalTitle}
-              </div>
-              <div className="text-xl">Anime Details</div>
+            <div className="rounded-sm bg-slate-50 p-2 capitalize shadow-md">
+              <h1 className="pb-2 text-xl">Anime Details</h1>
               <div className="flex flex-col gap-2 text-sm">
                 <div className="flex justify-between">
                   <div className="">English</div>
@@ -122,8 +119,11 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
               </div>
             </div>
           </div>
-          <div className="flex gap-2 rounded-sm bg-slate-50 p-4 shadow-md">
+          <div className="flex grow gap-2 rounded-sm bg-slate-50 p-4 shadow-md">
             <div className="flex w-2/3 grow flex-col gap-4 text-base">
+              <div className="mb-4 text-2xl">
+                {anime.attributes.canonicalTitle}
+              </div>
               {anime.attributes.description}
               <div className="flex gap-4">
                 {anime.genresArray.map((genre) => (
@@ -165,13 +165,29 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
               <div className="flex gap-2">
                 {relatedAnime.map((related) => (
                   <div key={related.id} className="flex w-20 flex-col">
-                    <img
-                      className="aspect-[3/4] w-full"
-                      src={related.attributes.posterImage.original}
-                    />
-                    <div className="text-sm">
-                      {related.attributes.canonicalTitle}
-                    </div>
+                    <Link
+                      href={
+                        related.type === "anime"
+                          ? {
+                              pathname: "/anime/[slug]",
+                              query: { slug: related.attributes.slug },
+                            }
+                          : {
+                              pathname: "/manga/[slug]",
+                              query: { slug: related.attributes.slug },
+                            }
+                      }
+                    >
+                      <a>
+                        <img
+                          className="aspect-[3/4] w-full"
+                          src={related.attributes.posterImage.original}
+                        />
+                        <div className="text-sm">
+                          {related.attributes.canonicalTitle}
+                        </div>
+                      </a>
+                    </Link>
                   </div>
                 ))}
               </div>

@@ -1,11 +1,13 @@
 import { format, parseISO } from "date-fns";
 import { GetStaticPropsContext } from "next";
 import Link from "next/link";
+import { Character } from "../../utils/AnimeQuery";
 import { MangaQuery } from "../../utils/MangaQuery";
 
 type MangaProps = {
   manga: MangaQuery;
   relatedManga: MangaQuery[];
+  characters: Character[];
 };
 
 async function getManga(slug: string) {
@@ -14,6 +16,12 @@ async function getManga(slug: string) {
   let results = data[0] as MangaQuery;
   results.genresArray = included;
   return results as MangaQuery;
+}
+
+async function getCharacters(id: string) {
+  const URL = `https://kitsu.io/api/edge/castings?filter[media_id]=${id}&filter[media_type]=Manga&filter[is_character]=true&include=character&page[limit]=4&sort=-featured`;
+  const { included } = await fetch(URL).then((res) => res.json());
+  return included as Character[];
 }
 
 async function getRelated(id: string) {
@@ -36,6 +44,7 @@ export function getStaticPaths() {
 export async function getStaticProps(ctx: GetStaticPropsContext) {
   const slug = ctx.params!.slug as string;
   const manga = await getManga(slug);
+  const characters = await getCharacters(manga.id);
   const relatedManga = await getRelated(manga.id);
   if (!manga) {
     return {
@@ -43,11 +52,11 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
     } as const;
   }
   return {
-    props: { manga, relatedManga },
+    props: { manga, relatedManga, characters },
   };
 }
 
-export default function Manga({ manga, relatedManga }: MangaProps) {
+export default function Manga({ manga, relatedManga, characters }: MangaProps) {
   const startDate = format(parseISO(manga.attributes.startDate), "do MMM yyyy");
   const endDate = format(parseISO(manga.attributes.endDate), "do MMM yyyy");
 
@@ -64,10 +73,7 @@ export default function Manga({ manga, relatedManga }: MangaProps) {
               className="mx-auto aspect-[3/4] w-full"
               src={manga.attributes.posterImage.small}
             />
-            <div className="rounded-sm bg-slate-50 p-2 shadow-md">
-              <div className="mb-4 text-2xl">
-                {manga.attributes.canonicalTitle}
-              </div>
+            <div className="rounded-sm bg-slate-50 p-2 capitalize shadow-md">
               <div className="text-xl">Manga Details</div>
               <div className="flex flex-col gap-2 text-sm">
                 <div className="flex justify-between">
@@ -106,11 +112,18 @@ export default function Manga({ manga, relatedManga }: MangaProps) {
                     <div>{manga.attributes.ageRatingGuide}</div>
                   </div>
                 ) : null}
+                <div className="flex justify-between">
+                  <div className="">Serialization</div>
+                  <div>{manga.attributes.serialization}</div>
+                </div>
               </div>
             </div>
           </div>
           <div className="flex gap-2 rounded-sm bg-slate-50 p-4 shadow-md">
             <div className="flex w-2/3 grow flex-col gap-4 text-base">
+              <div className="mb-4 text-2xl">
+                {manga.attributes.canonicalTitle}
+              </div>
               {manga.attributes.description}
               <div className="flex gap-4">
                 {manga.genresArray.map((genre) => (
@@ -124,6 +137,30 @@ export default function Manga({ manga, relatedManga }: MangaProps) {
               </div>
             </div>
             <div className="flex flex-col gap-3">
+              <div className="text-xl">Characters</div>
+              <div className="flex gap-2">
+                {characters.map((character) => (
+                  <div key={character.id} className="flex w-20 flex-col">
+                    <img
+                      className="aspect-[3/4] w-full"
+                      src={character.attributes.image.original}
+                    />
+                    <div className="text-sm">
+                      {character.attributes.canonicalName}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Link
+                href={{
+                  pathname: "/anime/[slug]/characters",
+                  query: { slug: manga.attributes.slug },
+                }}
+              >
+                <a className="text-neutral-400 underline hover:opacity-50 ">
+                  View all characters
+                </a>
+              </Link>
               <div className="text-xl">Related manga</div>
               <div className="flex gap-2">
                 {relatedManga.map((related) => (
