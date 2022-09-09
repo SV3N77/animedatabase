@@ -10,23 +10,24 @@ type AnimeProps = {
 };
 
 async function getAnime(slug: string) {
-  const URL = `https://kitsu.io/api/edge/anime?filter[slug]=${slug}&include=genres`;
+  const URL = `https://kitsu.io/api/edge/anime?filter[slug]=${slug}&include=categories`;
   const { data, included } = await fetch(URL).then((res) => res.json());
   let results = data[0] as AnimeQuery;
-  results.genresArray = included;
+  results.categoriesArray = included;
   return results as AnimeQuery;
 }
 
 async function getCharacters(id: string) {
   const URL = `https://kitsu.io/api/edge/castings?filter[media_id]=${id}&filter[media_type]=Anime&filter[is_character]=true&include=character&page[limit]=4&sort=-featured`;
   const { included } = await fetch(URL).then((res) => res.json());
-  return included as Character[];
+
+  return (included || []) as Character[];
 }
 
 async function getRelated(id: string) {
   const URL = `https://kitsu.io/api/edge/media-relationships?filter[source_id]=${id}&filter[source_type]=Anime&include=destination&page[limit]=4&sort=role`;
   const { included } = await fetch(URL).then((res) => res.json());
-  return included as AnimeQuery[];
+  return (included || []) as AnimeQuery[];
 }
 
 export function getStaticPaths() {
@@ -62,8 +63,11 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
     <section className="container mx-auto mb-8">
       <div className="flex flex-col gap-4">
         <img
-          className="aspect-[18/3] w-full"
-          src={anime.attributes.coverImage.large}
+          className="aspect-[18/3] w-full object-cover"
+          src={
+            anime.attributes.coverImage?.large ||
+            "https://www.treehugger.com/thmb/QolJfOYFmxwIH6Sxv5SBqY8Kq-M=/1885x1414/smart/filters:no_upscale()/GettyImages-1273584292-cbcd5f85f4c646d58f7a7fa158dcaaeb.jpg"
+          }
         />
         <div className="flex gap-4">
           <div className="flex shrink-0 flex-col gap-4">
@@ -125,82 +129,90 @@ export default function index({ anime, characters, relatedAnime }: AnimeProps) {
                 {anime.attributes.canonicalTitle}
               </div>
               {anime.attributes.description}
-              <div className="flex gap-4">
-                {anime.genresArray.map((genre) => (
+              <div className="flex flex-wrap gap-4">
+                {anime.categoriesArray.map((category) => (
                   <span
-                    key={genre.id}
+                    key={category.id}
                     className="rounded-lg bg-emerald-50 p-1 shadow-sm"
                   >
-                    {genre.attributes.name}
+                    {category.attributes.title}
                   </span>
                 ))}
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              <div className="text-xl">Characters</div>
-              <div className="flex gap-2">
-                {characters.map((character) => (
-                  <div key={character.id} className="flex w-20 flex-col">
-                    <img
-                      className="aspect-[3/4] w-full"
-                      src={character.attributes.image.original}
-                    />
-                    <div className="text-sm">
-                      {character.attributes.canonicalName}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <Link
-                href={{
-                  pathname: "/anime/[slug]/characters",
-                  query: { slug: anime.attributes.slug },
-                }}
-              >
-                <a className="text-neutral-400 underline hover:opacity-50 ">
-                  View all characters
-                </a>
-              </Link>
-              <div className="text-xl">Related Anime</div>
-              <div className="flex gap-2">
-                {relatedAnime.map((related) => (
-                  <div key={related.id} className="flex w-20 flex-col">
-                    <Link
-                      href={
-                        related.type === "anime"
-                          ? {
-                              pathname: "/anime/[slug]",
-                              query: { slug: related.attributes.slug },
-                            }
-                          : {
-                              pathname: "/manga/[slug]",
-                              query: { slug: related.attributes.slug },
-                            }
-                      }
-                    >
-                      <a>
+              {characters.length > 0 && (
+                <div>
+                  <div className="text-xl">Characters</div>
+                  <div className="flex gap-2">
+                    {characters.map((character) => (
+                      <div key={character.id} className="flex w-20 flex-col">
                         <img
                           className="aspect-[3/4] w-full"
-                          src={related.attributes.posterImage.original}
+                          src={character.attributes.image.original}
                         />
                         <div className="text-sm">
-                          {related.attributes.canonicalTitle}
+                          {character.attributes.canonicalName}
                         </div>
-                      </a>
-                    </Link>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              <Link
-                href={{
-                  pathname: "/anime/[slug]/franchises",
-                  query: { slug: anime.attributes.slug },
-                }}
-              >
-                <a className="text-neutral-400 underline hover:opacity-50 ">
-                  View all in {anime.attributes.canonicalTitle}
-                </a>
-              </Link>
+                  <Link
+                    href={{
+                      pathname: "/anime/[slug]/characters",
+                      query: { slug: anime.attributes.slug },
+                    }}
+                  >
+                    <a className="text-neutral-400 underline hover:opacity-50 ">
+                      View all characters
+                    </a>
+                  </Link>
+                </div>
+              )}
+              {relatedAnime.length > 0 && (
+                <div>
+                  <div className="text-xl">Related Anime</div>
+                  <div className="flex gap-2">
+                    {relatedAnime.map((related) => (
+                      <div key={related.id} className="flex w-20 flex-col">
+                        <Link
+                          href={
+                            related.type === "anime"
+                              ? {
+                                  pathname: "/anime/[slug]",
+                                  query: { slug: related.attributes.slug },
+                                }
+                              : {
+                                  pathname: "/manga/[slug]",
+                                  query: { slug: related.attributes.slug },
+                                }
+                          }
+                        >
+                          <a>
+                            <img
+                              className="aspect-[3/4] w-full"
+                              src={related.attributes.posterImage.original}
+                            />
+                            <div className="text-sm">
+                              {related.attributes.canonicalTitle}
+                            </div>
+                          </a>
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                  <Link
+                    href={{
+                      pathname: "/anime/[slug]/franchises",
+                      query: { slug: anime.attributes.slug },
+                    }}
+                  >
+                    <a className="text-neutral-400 underline hover:opacity-50 ">
+                      View all in {anime.attributes.canonicalTitle}
+                    </a>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

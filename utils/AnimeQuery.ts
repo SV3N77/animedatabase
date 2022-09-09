@@ -58,7 +58,7 @@ export type AnimeQuery = {
         };
       };
     };
-    coverImage: {
+    coverImage?: {
       tiny: string;
       large: string;
       small: string;
@@ -185,10 +185,10 @@ export type AnimeQuery = {
       };
     };
   };
-  genresArray: Genre[];
+  categoriesArray: Categories[];
 };
 
-export type Genre = {
+export type Categories = {
   id: string;
   type: string;
   links: {
@@ -197,9 +197,38 @@ export type Genre = {
   attributes: {
     createdAt: string;
     updatedAt: string;
-    name: string;
+    title: string;
+    description: string;
+    totalMediaCount: number;
     slug: string;
-    description?: string;
+    nsfw: boolean;
+    childCount: number;
+  };
+  relationships: {
+    parent: {
+      links: {
+        self: string;
+        related: string;
+      };
+    };
+    anime: {
+      links: {
+        self: string;
+        related: string;
+      };
+    };
+    drama: {
+      links: {
+        self: string;
+        related: string;
+      };
+    };
+    manga: {
+      links: {
+        self: string;
+        related: string;
+      };
+    };
   };
 };
 

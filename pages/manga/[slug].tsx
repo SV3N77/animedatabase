@@ -11,27 +11,23 @@ type MangaProps = {
 };
 
 async function getManga(slug: string) {
-  const URL = `https://kitsu.io/api/edge/manga?filter[slug]=${slug}&include=genres`;
+  const URL = `https://kitsu.io/api/edge/manga?filter[slug]=${slug}&include=categories`;
   const { data, included } = await fetch(URL).then((res) => res.json());
   let results = data[0] as MangaQuery;
-  results.genresArray = included;
+  results.categoriesArray = included;
   return results as MangaQuery;
 }
 
 async function getCharacters(id: string) {
   const URL = `https://kitsu.io/api/edge/castings?filter[media_id]=${id}&filter[media_type]=Manga&filter[is_character]=true&include=character&page[limit]=4&sort=-featured`;
   const { included } = await fetch(URL).then((res) => res.json());
-  return included as Character[];
+  return (included || []) as Character[];
 }
 
 async function getRelated(id: string) {
   const URL = `https://kitsu.io/api/edge/media-relationships?filter[source_id]=${id}&filter[source_type]=Manga&include=destination&page[limit]=4&sort=role`;
   const { included } = await fetch(URL).then((res) => res.json());
-  return included as MangaQuery[];
-}
-
-async function getDefaultImage(id: string) {
-  const URL = `https://media.kitsu.io/anime/12/cover_image/`;
+  return (included || []) as MangaQuery[];
 }
 
 export function getStaticPaths() {
@@ -64,8 +60,11 @@ export default function Manga({ manga, relatedManga, characters }: MangaProps) {
     <section className="container mx-auto mb-8">
       <div className="flex flex-col gap-4">
         <img
-          className="aspect-[18/3] w-full"
-          src={manga.attributes.coverImage}
+          className="aspect-[18/3] w-full object-cover"
+          src={
+            manga.attributes.coverImage ||
+            "https://www.treehugger.com/thmb/QolJfOYFmxwIH6Sxv5SBqY8Kq-M=/1885x1414/smart/filters:no_upscale()/GettyImages-1273584292-cbcd5f85f4c646d58f7a7fa158dcaaeb.jpg"
+          }
         />
         <div className="flex gap-4">
           <div className="flex shrink-0 flex-col gap-4">
@@ -125,66 +124,74 @@ export default function Manga({ manga, relatedManga, characters }: MangaProps) {
                 {manga.attributes.canonicalTitle}
               </div>
               {manga.attributes.description}
-              <div className="flex gap-4">
-                {manga.genresArray.map((genre) => (
+              <div className="flex flex-wrap gap-4">
+                {manga.categoriesArray.map((category) => (
                   <span
-                    key={genre.id}
+                    key={category.id}
                     className="rounded-lg bg-emerald-50 p-1 shadow-sm"
                   >
-                    {genre.attributes.name}
+                    {category.attributes.title}
                   </span>
                 ))}
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              <div className="text-xl">Characters</div>
-              <div className="flex gap-2">
-                {characters.map((character) => (
-                  <div key={character.id} className="flex w-20 flex-col">
-                    <img
-                      className="aspect-[3/4] w-full"
-                      src={character.attributes.image.original}
-                    />
-                    <div className="text-sm">
-                      {character.attributes.canonicalName}
-                    </div>
+              {characters.length > 0 && (
+                <div>
+                  <div className="text-xl">Characters</div>
+                  <div className="flex gap-2">
+                    {characters.map((character) => (
+                      <div key={character.id} className="flex w-20 flex-col">
+                        <img
+                          className="aspect-[3/4] w-full"
+                          src={character.attributes.image.original}
+                        />
+                        <div className="text-sm">
+                          {character.attributes.canonicalName}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              <Link
-                href={{
-                  pathname: "/anime/[slug]/characters",
-                  query: { slug: manga.attributes.slug },
-                }}
-              >
-                <a className="text-neutral-400 underline hover:opacity-50 ">
-                  View all characters
-                </a>
-              </Link>
-              <div className="text-xl">Related manga</div>
-              <div className="flex gap-2">
-                {relatedManga.map((related) => (
-                  <div key={related.id} className="flex w-20 flex-col">
-                    <img
-                      className="aspect-[3/4] w-full"
-                      src={related.attributes.posterImage.original}
-                    />
-                    <div className="text-sm">
-                      {related.attributes.canonicalTitle}
-                    </div>
+                  <Link
+                    href={{
+                      pathname: "/anime/[slug]/characters",
+                      query: { slug: manga.attributes.slug },
+                    }}
+                  >
+                    <a className="text-neutral-400 underline hover:opacity-50 ">
+                      View all characters
+                    </a>
+                  </Link>
+                </div>
+              )}
+              {relatedManga.length > 0 && (
+                <div>
+                  <div className="text-xl">Related manga</div>
+                  <div className="flex gap-2">
+                    {relatedManga.map((related) => (
+                      <div key={related.id} className="flex w-20 flex-col">
+                        <img
+                          className="aspect-[3/4] w-full"
+                          src={related.attributes.posterImage.original}
+                        />
+                        <div className="text-sm">
+                          {related.attributes.canonicalTitle}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              <Link
-                href={{
-                  pathname: "/manga/[slug]/franchises",
-                  query: { slug: manga.attributes.slug },
-                }}
-              >
-                <a className="text-neutral-400 underline hover:opacity-50 ">
-                  View all in {manga.attributes.canonicalTitle}
-                </a>
-              </Link>
+                  <Link
+                    href={{
+                      pathname: "/manga/[slug]/franchises",
+                      query: { slug: manga.attributes.slug },
+                    }}
+                  >
+                    <a className="text-neutral-400 underline hover:opacity-50 ">
+                      View all in {manga.attributes.canonicalTitle}
+                    </a>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
