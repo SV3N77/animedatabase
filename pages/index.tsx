@@ -4,22 +4,23 @@ import Link from "next/link";
 import { useState } from "react";
 import { AnimeQuery } from "../utils/AnimeQuery";
 
+// passing query string to get query data from api
 async function getAnimes(query: string) {
-  const URL = `https://kitsu.io/api/edge/anime?filter[text]=${query}`;
+  const URL = `https://kitsu.io/api/edge/anime?filter[text]=${query}&page[limit]=10`;
   const { data } = await fetch(URL).then((res) => res.json());
   return data as AnimeQuery[];
 }
 
 function Home() {
   const [query, setQuery] = useState<string>("");
-
+  // useQuery with query
   const search = useQuery({
     queryKey: ["search", query],
     queryFn: () => getAnimes(query),
     enabled: query.length > 3,
     keepPreviousData: true,
   });
-
+  // form submit
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -119,9 +120,9 @@ function AnimeCard({ anime }: AnimeCardProps) {
       </Link>
       <div className="flex grow flex-col gap-2">
         <div className="flex justify-end gap-2 bg-emerald-50 px-4 py-3 text-sm">
-          {anime.attributes.averageRating ? (
+          {anime.attributes.averageRating && (
             <div>{anime.attributes.averageRating} Average Rating</div>
-          ) : null}
+          )}
           <div className="">{anime.attributes.episodeCount} episodes</div>
         </div>
         <div className="grow overflow-auto p-4 text-sm">

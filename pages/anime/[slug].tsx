@@ -3,12 +3,14 @@ import { GetStaticPropsContext } from "next";
 import Link from "next/link";
 import { AnimeQuery, Character } from "../../utils/AnimeQuery";
 
+// props for page
 type AnimeProps = {
   anime: AnimeQuery;
   relatedAnime: AnimeQuery[];
   characters: Character[];
 };
 
+// using slug of anime to get anime details with categories
 async function getAnime(slug: string) {
   const URL = `https://kitsu.io/api/edge/anime?filter[slug]=${slug}&include=categories`;
   const { data, included } = await fetch(URL).then((res) => res.json());
@@ -17,31 +19,36 @@ async function getAnime(slug: string) {
   return results as AnimeQuery;
 }
 
+// using anime id to get 4 of the featured characters
 async function getCharacters(id: string) {
   const URL = `https://kitsu.io/api/edge/castings?filter[media_id]=${id}&filter[media_type]=Anime&filter[is_character]=true&include=character&page[limit]=4&sort=-featured`;
   const { included } = await fetch(URL).then((res) => res.json());
-
+  // if included is empty then return empty array
   return (included || []) as Character[];
 }
 
 async function getRelated(id: string) {
   const URL = `https://kitsu.io/api/edge/media-relationships?filter[source_id]=${id}&filter[source_type]=Anime&include=destination&page[limit]=4&sort=role`;
   const { included } = await fetch(URL).then((res) => res.json());
+  // if included is empty then return empty array
   return (included || []) as AnimeQuery[];
 }
 
+// blocks page until it data is loaded
 export function getStaticPaths() {
   return {
     paths: [],
     fallback: "blocking",
   };
 }
-
+// Next js getStaticProps data fetching for static site
 export async function getStaticProps(ctx: GetStaticPropsContext) {
+  // get params of link to get slug as string
   const slug = ctx.params!.slug as string;
   const anime = await getAnime(slug);
   const characters = await getCharacters(anime.id);
   const relatedAnime = await getRelated(anime.id);
+  // if anime does not exist then return notFound
   if (!anime) {
     return {
       notFound: true,
@@ -53,6 +60,7 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
 }
 
 export default function index({ anime, characters, relatedAnime }: AnimeProps) {
+  // using date-fns to change the style of date
   let endDate;
   const startDate = format(parseISO(anime.attributes.startDate), "do MMM yyyy");
   if (anime.attributes.endDate) {
