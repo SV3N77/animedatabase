@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Character } from "../../utils/AnimeQuery";
 import { MangaQuery } from "../../utils/MangaQuery";
 
+// props for page
 type MangaProps = {
   manga: MangaQuery;
   relatedManga: MangaQuery[];
