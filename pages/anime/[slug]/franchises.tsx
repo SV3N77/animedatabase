@@ -11,7 +11,7 @@ async function getAnime(slug: string) {
 }
 
 async function getAllFranchises(id: string) {
-  const URL = `https://kitsu.io/api/edge/media-relationships?filter[source_id]=${id}&filter[source_type]=Anime&include=destination&sort=role`;
+  const URL = `https://kitsu.io/api/edge/media-relationships?filter[source_id]=${id}&filter[source_type]=Anime&include=destination&page[limit]=20&sort=role`;
   const { included } = await fetch(URL).then((res) => res.json());
   return included as AnimeQuery[];
 }

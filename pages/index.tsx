@@ -6,7 +6,7 @@ import { AnimeQuery } from "../utils/AnimeQuery";
 
 // passing query string to get query data from api
 async function getAnimes(query: string) {
-  const URL = `https://kitsu.io/api/edge/anime?filter[text]=${query}&page[limit]=10`;
+  const URL = `https://kitsu.io/api/edge/anime?filter[text]=${query}&page[limit]=20`;
   const { data } = await fetch(URL).then((res) => res.json());
   return data as AnimeQuery[];
 }

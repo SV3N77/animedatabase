@@ -10,7 +10,7 @@ async function getAnime(slug: string) {
 }
 
 async function getAllCharacters(id: string) {
-  const URL = `https://kitsu.io/api/edge/castings?filter[media_type]=Anime&filter[media_id]=${id}&filter[is_character]=true&filter[language]=Japanese&include=character,person&sort=-featured`;
+  const URL = `https://kitsu.io/api/edge/castings?filter[media_type]=Anime&filter[media_id]=${id}&filter[is_character]=true&filter[language]=Japanese&include=character,person&page[limit]=20&sort=-featured`;
   const { included } = await fetch(URL).then((res) => res.json());
   return included as Character[];
 }
@@ -21,6 +21,7 @@ export function getStaticPaths() {
     fallback: "blocking",
   };
 }
+
 export async function getStaticProps(ctx: GetStaticPropsContext) {
   const slug = ctx.params!.slug as string;
   const anime = await getAnime(slug);
@@ -41,6 +42,7 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
     props: { anime, animeCharacters },
   };
 }
+
 export default function characters({ anime, animeCharacters }: CharacterProps) {
   return (
     <section className="container mx-auto py-8">

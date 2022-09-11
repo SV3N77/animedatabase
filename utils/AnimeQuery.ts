@@ -306,3 +306,9 @@ export type Character = {
     };
   };
 };
+
+export type Links = {
+  first: string;
+  next: string;
+  last: string;
+};

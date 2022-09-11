@@ -11,7 +11,7 @@ async function getManaga(slug: string) {
 }
 
 async function getAllCharacters(id: string) {
-  const URL = `https://kitsu.io/api/edge/castings?filter[media_type]=Manga&filter[media_id]=${id}&filter[is_character]=true&filter[language]=Japanese&include=character,person&sort=-featured`;
+  const URL = `https://kitsu.io/api/edge/castings?filter[media_type]=Manga&filter[media_id]=${id}&filter[is_character]=true&filter[language]=Japanese&include=character,person&page[limit]=20&sort=-featured`;
   const { included } = await fetch(URL).then((res) => res.json());
   return included as Character[];
 }
