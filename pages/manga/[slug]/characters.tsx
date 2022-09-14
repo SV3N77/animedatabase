@@ -1,5 +1,6 @@
 import { GetStaticPropsContext } from "next";
 import { useState } from "react";
+import Button from "../../../components/Button";
 import { Character, MoreCharacters } from "../../../utils/AnimeQuery";
 import { MangaQuery } from "../../../utils/MangaQuery";
 
@@ -36,9 +37,6 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
   const allCharacters = await getAllCharacters(manga.id);
   const mangaCharacters = allCharacters.filter(
     (character) => character.type === "characters"
-  );
-  const voiceActors = allCharacters.filter(
-    (character) => character.type === "people"
   );
 
   if (!allCharacters) {
@@ -95,7 +93,7 @@ export default function characters({ manga, mangaCharacters }: CharacterProps) {
             </div>
           ))}
         </div>
-        {isNextPage && <button onClick={loadMore}>load more</button>}
+        {isNextPage && <Button onClick={loadMore}>load more</Button>}
       </div>
     </section>
   );

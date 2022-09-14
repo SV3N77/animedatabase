@@ -1,5 +1,6 @@
 import { GetStaticPropsContext } from "next";
 import { useState } from "react";
+import Button from "../../../components/Button";
 import {
   AnimeQuery,
   Character,
@@ -100,7 +101,7 @@ export default function characters({ anime, animeCharacters }: CharacterProps) {
             </div>
           ))}
         </div>
-        {isNextPage && <button onClick={loadMore}>load more</button>}
+        {isNextPage && <Button onClick={loadMore}>load more</Button>}
       </div>
     </section>
   );
