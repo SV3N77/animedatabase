@@ -76,7 +76,7 @@ function Home() {
             </button>
           </div>
         </form>
-        <section className="mt-4 grid grid-cols-2 gap-4">
+        <section className="mt-4 flex flex-col gap-4 lg:grid lg:grid-cols-2">
           {search.data?.map((attribute) => (
             <AnimeCard key={attribute.id} anime={attribute} />
           ))}
@@ -118,14 +118,14 @@ function AnimeCard({ anime }: AnimeCardProps) {
           </div>
         </a>
       </Link>
-      <div className="flex grow flex-col gap-2">
+      <div className="flex flex-col gap-2 lg:grow">
         <div className="flex justify-end gap-2 bg-emerald-50 px-4 py-3 text-sm">
           {anime.attributes.averageRating && (
             <div>{anime.attributes.averageRating} Average Rating</div>
           )}
           <div className="">{anime.attributes.episodeCount} episodes</div>
         </div>
-        <div className="grow overflow-auto p-4 text-sm">
+        <div className="overflow-y-auto p-4 text-sm lg:grow">
           {anime.attributes.synopsis}
         </div>
       </div>

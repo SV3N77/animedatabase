@@ -311,4 +311,10 @@ export type Links = {
   first: string;
   next: string;
   last: string;
+  prev: string;
+};
+
+export type MoreCharacters = {
+  characters: Character[];
+  links: Links;
 };
