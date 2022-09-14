@@ -4,7 +4,6 @@ import Button from "../../../components/Button";
 import {
   AnimeQuery,
   Character,
-  Links,
   MoreCharacters,
 } from "../../../utils/AnimeQuery";
 
@@ -54,7 +53,7 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
   };
 }
 
-export default function characters({ anime, animeCharacters }: CharacterProps) {
+export default function Characters({ anime, animeCharacters }: CharacterProps) {
   const [characters, setCharacters] = useState<Character[]>(animeCharacters);
   const [isNextPage, setIsNextPage] = useState(true);
   const [page, setPage] = useState(10);

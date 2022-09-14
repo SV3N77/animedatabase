@@ -59,7 +59,7 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
   };
 }
 
-export default function index({ anime, characters, relatedAnime }: AnimeProps) {
+export default function Anime({ anime, characters, relatedAnime }: AnimeProps) {
   // using date-fns to change the style of date
   let endDate;
   const startDate = format(parseISO(anime.attributes.startDate), "do MMM yyyy");

@@ -48,7 +48,7 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
     props: { manga, mangaCharacters },
   };
 }
-export default function characters({ manga, mangaCharacters }: CharacterProps) {
+export default function Characters({ manga, mangaCharacters }: CharacterProps) {
   const [characters, setCharacters] = useState<Character[]>(mangaCharacters);
   const [isNextPage, setIsNextPage] = useState(true);
   const [page, setPage] = useState(10);

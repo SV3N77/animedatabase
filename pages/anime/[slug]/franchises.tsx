@@ -36,7 +36,7 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
     props: { anime, franchises },
   };
 }
-export default function franchises({ anime, franchises }: FranchiseProps) {
+export default function Franchises({ anime, franchises }: FranchiseProps) {
   return (
     <section className="container mx-auto py-8">
       <div className="flex flex-col gap-2">
