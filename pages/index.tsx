@@ -1,14 +1,26 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
-import { AnimeQuery } from "../utils/AnimeQuery";
+import { AnimeQuery, Links } from "../utils/AnimeQuery";
+
+type QueryProps = {
+  anime: AnimeQuery[];
+  next: string;
+};
 
 // passing query string to get query data from api
 async function getAnimes(query: string) {
   const URL = `https://kitsu.io/api/edge/anime?filter[text]=${query}&page[limit]=20`;
   const { data } = await fetch(URL).then((res) => res.json());
   return data as AnimeQuery[];
+}
+
+async function getMoreAnime(query: string) {
+  const URL = `https://kitsu.io/api/edge/anime?filter[text]=${query}&page[limit]=20&page[offset]=0`;
+  const { data, links } = await fetch(URL).then((res) => res.json());
+  let results = { anime: data, next: links.next } as QueryProps;
+  return results;
 }
 
 function Home() {
@@ -21,6 +33,12 @@ function Home() {
     enabled: query.length > 3,
     keepPreviousData: true,
   });
+
+  // const searchs = useInfiniteQuery(
+  //   ["search", query],
+  //   () => getMoreAnime(query),
+  //   { getNextPageParam: (lastPage) => lastPage.next }
+  // );
 
   // form submit
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -78,7 +96,7 @@ function Home() {
             </button>
           </div>
         </form>
-        {search.isFetching && (
+        {search.isFetching && search.isPreviousData && (
           <div className="text-center">
             <div role="status">
               <svg
@@ -100,10 +118,21 @@ function Home() {
             </div>
           </div>
         )}
+        {search.data?.length === 0 && (
+          <div className="text-center">{query} Not Found</div>
+        )}
+
         <section className="mt-4 flex flex-col gap-4 lg:grid lg:grid-cols-2">
           {search.data?.map((attribute) => (
             <AnimeCard key={attribute.id} anime={attribute} />
           ))}
+          {/* {searchs.data?.pages.map((group, i) => (
+            <div>
+              {group.anime.map((ani) => (
+                <div>{ani.attributes.canonicalTitle}</div>
+              ))}
+            </div>
+          ))} */}
         </section>
       </section>
     </div>
