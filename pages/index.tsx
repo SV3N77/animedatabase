@@ -1,9 +1,9 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import Head from "next/head";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { AnimeQuery, Links } from "../utils/AnimeQuery";
+import { AnimeQuery } from "../utils/AnimeQuery";
 
 type QueryProps = {
   anime: AnimeQuery[];
@@ -14,8 +14,9 @@ type QueryProps = {
 async function getAnimes(query: string, pageParam: number) {
   const url = `https://kitsu.io/api/edge/anime?filter[text]=${query}&page[limit]=10&page[offset]=${pageParam}`;
   const { data, links } = await fetch(url).then((res) => res.json());
+  // gets next link and if there is a next link
   const nextPageURL = links.next ? new URL(links.next) : undefined;
-
+  // ternary for if there is a next page and get page[offset]
   let results = {
     anime: data,
     next: nextPageURL
@@ -26,17 +27,13 @@ async function getAnimes(query: string, pageParam: number) {
   return results;
 }
 
-async function getMoreAnime(pageParam: number) {
-  const URL = `https://kitsu.io/api/edge/anime?filter[text]=${query}&page[limit]=10`;
-  const { data } = await fetch(URL).then((res) => res.json());
-  let results = { anime: data, next: pageParam + 10 } as QueryProps;
-  return results;
-}
-
 function Home() {
   const [query, setQuery] = useState<string>("");
+  // initiate react-intersection-observer ref
   const { ref, inView } = useInView();
 
+  // useinfinitequery
+  // pass search query and pageParam
   const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteQuery(
     ["search", query],
     ({ pageParam = 0 }) => getAnimes(query, pageParam),
@@ -48,7 +45,7 @@ function Home() {
       enabled: query.length > 3,
     }
   );
-
+  // checks if ref is in view
   useEffect(() => {
     if (inView) {
       fetchNextPage();
