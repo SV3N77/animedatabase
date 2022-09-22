@@ -109,6 +109,10 @@ export default function Franchises({ anime, franchises }: FranchiseProps) {
                   <img
                     className="aspect-[3/4] w-full"
                     src={franchise.attributes.posterImage.original}
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        franchise.attributes.posterImage.medium;
+                    }}
                   />
                   <div className="">{franchise.attributes.canonicalTitle}</div>
                 </a>
