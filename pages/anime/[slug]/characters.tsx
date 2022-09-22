@@ -1,5 +1,6 @@
 import { GetStaticPropsContext } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import Button from "../../../components/Button";
 import {
   AnimeQuery,
@@ -57,6 +58,13 @@ export default function Characters({ anime, animeCharacters }: CharacterProps) {
   const [characters, setCharacters] = useState<Character[]>(animeCharacters);
   const [isNextPage, setIsNextPage] = useState(true);
   const [page, setPage] = useState(10);
+  const { ref, inView } = useInView();
+  // checks if ref is in view
+  useEffect(() => {
+    if (inView && isNextPage) {
+      loadMore();
+    }
+  }, [inView]);
 
   async function loadMore() {
     const nextLoad = await getMoreCharacters(anime.id, page);
@@ -100,8 +108,10 @@ export default function Characters({ anime, animeCharacters }: CharacterProps) {
             </div>
           ))}
         </div>
-        {isNextPage && <Button onClick={loadMore}>load more</Button>}
       </div>
+      <button ref={ref} onClick={() => loadMore()} className="invisible">
+        load more
+      </button>
     </section>
   );
 }

@@ -54,7 +54,7 @@ export default function Franchises({ anime, franchises }: FranchiseProps) {
 
   // checks if ref is in view
   useEffect(() => {
-    if (inView) {
+    if (inView && nextPage) {
       loadMore();
     }
   }, [inView]);
