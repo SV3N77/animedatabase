@@ -318,3 +318,8 @@ export type MoreCharacters = {
   characters: Character[];
   links: Links;
 };
+
+export type MoreFranchises = {
+  franchises: AnimeQuery[];
+  links: Links;
+};

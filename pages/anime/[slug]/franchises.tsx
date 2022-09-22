@@ -1,6 +1,8 @@
 import { GetStaticPropsContext } from "next";
 import Link from "next/link";
-import { AnimeQuery } from "../../../utils/AnimeQuery";
+import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
+import { AnimeQuery, MoreFranchises } from "../../../utils/AnimeQuery";
 
 type FranchiseProps = { anime: AnimeQuery; franchises: AnimeQuery[] };
 
@@ -14,6 +16,13 @@ async function getAllFranchises(id: string) {
   const URL = `https://kitsu.io/api/edge/media-relationships?filter[source_id]=${id}&filter[source_type]=Anime&include=destination&page[limit]=20&sort=role`;
   const { included } = await fetch(URL).then((res) => res.json());
   return included as AnimeQuery[];
+}
+
+async function getMoreFranchises(id: string, page: number) {
+  const URL = `https://kitsu.io/api/edge/media-relationships?filter[source_id]=${id}&filter[source_type]=Anime&include=destination&page[limit]=20&page[offset]=${page}&sort=role`;
+  const { included, links } = await fetch(URL).then((res) => res.json());
+  let results = { franchises: included, links: links } as MoreFranchises;
+  return results;
 }
 
 export function getStaticPaths() {
@@ -37,6 +46,43 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
   };
 }
 export default function Franchises({ anime, franchises }: FranchiseProps) {
+  const [relatedFranchises, setRelatedFranchises] =
+    useState<AnimeQuery[]>(franchises);
+  const [nextPage, setNextPage] = useState(true);
+  const [page, setPage] = useState(20);
+  const { ref, inView } = useInView();
+
+  // checks if ref is in view
+  useEffect(() => {
+    if (inView) {
+      loadMore();
+    }
+  }, [inView]);
+
+  async function loadMore() {
+    const nextLoad = await getMoreFranchises(anime.id, page);
+    if (nextLoad.links.next) {
+      setPage((prev) => prev + 10);
+      setRelatedFranchises((prev) => {
+        const spreadArray = [...prev, ...nextLoad.franchises];
+        // deDuped = [...new Map(arr.map(v => [v.id, v])).values()]
+        // creates a new map where Object.values(spreadArray).map((character) => [character.id, character,])).values()
+        // returns a new object array with no duplicated objects
+        const deDuped = [
+          ...new Map(
+            Object.values(spreadArray).map((character) => [
+              character.id,
+              character,
+            ])
+          ).values(),
+        ];
+        return deDuped;
+      });
+    } else {
+      setNextPage(false);
+    }
+  }
+
   return (
     <section className="container mx-auto py-8">
       <div className="flex flex-col gap-2">
@@ -44,7 +90,7 @@ export default function Franchises({ anime, franchises }: FranchiseProps) {
           {anime.attributes.canonicalTitle} Franchise
         </h1>
         <div className="flex flex-wrap gap-6">
-          {franchises.map((franchise) => (
+          {relatedFranchises.map((franchise) => (
             <div key={franchise.id} className="w-56">
               <Link
                 href={
@@ -71,6 +117,9 @@ export default function Franchises({ anime, franchises }: FranchiseProps) {
           ))}
         </div>
       </div>
+      <button ref={ref} onClick={() => loadMore()} className="invisible">
+        load more
+      </button>
     </section>
   );
 }

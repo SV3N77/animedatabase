@@ -220,3 +220,15 @@ export type Categories = {
     };
   };
 };
+
+export type Links = {
+  first: string;
+  next: string;
+  last: string;
+  prev: string;
+};
+
+export type MoreFranchises = {
+  franchises: MangaQuery[];
+  links: Links;
+};
