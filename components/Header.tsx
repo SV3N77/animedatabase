@@ -1,12 +1,14 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export default function Header() {
+  const router = useRouter();
   return (
     <header className="flex bg-emerald-600 p-4">
       <div className="container mx-auto flex items-center justify-between">
-        <Link href="/">
+        <button onClick={() => router.reload()}>
           <a className="text-2xl text-white">AnimeDB</a>
-        </Link>
+        </button>
         <Link href="/">
           <a className="text-white">Home</a>
         </Link>
