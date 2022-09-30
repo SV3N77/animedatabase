@@ -6,7 +6,11 @@ export default function Header() {
   return (
     <header className="flex bg-emerald-600 p-4">
       <div className="container mx-auto flex items-center justify-between">
-        <button onClick={() => router.reload()}>
+        <button
+          onClick={() =>
+            router.pathname === "/" ? router.reload() : router.push("/")
+          }
+        >
           <a className="text-2xl text-white">AnimeDB</a>
         </button>
         <Link href="/">

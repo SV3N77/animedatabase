@@ -1,7 +1,6 @@
 import { GetStaticPropsContext } from "next";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import Button from "../../../components/Button";
 import {
   AnimeQuery,
   Character,

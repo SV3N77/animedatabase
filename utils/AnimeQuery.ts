@@ -323,3 +323,7 @@ export type MoreFranchises = {
   franchises: AnimeQuery[];
   links: Links;
 };
+
+export type AnimeCardProps = {
+  anime: AnimeQuery;
+};

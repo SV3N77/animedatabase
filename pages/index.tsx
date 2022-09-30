@@ -3,7 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { AnimeQuery } from "../utils/AnimeQuery";
+import { AnimeCardProps, AnimeQuery } from "../utils/AnimeQuery";
 
 type QueryProps = {
   anime: AnimeQuery[];
@@ -29,7 +29,7 @@ async function getAnimes(query: string, pageParam: number) {
 
 async function getTrending() {
   const { data } = await fetch(
-    `https://kitsu.io/api/edge/trending/anime?limit=10&page[offset]=`
+    `https://kitsu.io/api/edge/trending/anime?limit=10`
   ).then((res) => res.json());
   return data as AnimeQuery[];
 }
@@ -171,6 +171,11 @@ function Home() {
                 </React.Fragment>
               ))}
             </div>
+            <Link href="/trending">
+              <a className="text-neutral-400 underline hover:opacity-50 ">
+                View More...
+              </a>
+            </Link>
           </section>
         )}
       </section>
@@ -181,10 +186,6 @@ function Home() {
 export default Home;
 
 // internal components
-
-type AnimeCardProps = {
-  anime: AnimeQuery;
-};
 
 function AnimeCard({ anime }: AnimeCardProps) {
   return (
