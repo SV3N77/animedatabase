@@ -164,7 +164,7 @@ function Home() {
         ) : (
           <section className="flex flex-col gap-2">
             <div className="text-2xl">Trending Anime</div>
-            <div className="flex flex-wrap gap-2">
+            <div className="mx-auto flex flex-wrap gap-2">
               {trending.data?.map((trendingAnime) => (
                 <React.Fragment key={trendingAnime.id}>
                   <SmallAnimeCard anime={trendingAnime} />
@@ -172,7 +172,7 @@ function Home() {
               ))}
             </div>
             <Link href="/trending">
-              <a className="text-neutral-400 underline hover:opacity-50 ">
+              <a className="text-right text-neutral-400 underline hover:opacity-50">
                 View More...
               </a>
             </Link>
