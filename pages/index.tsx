@@ -29,13 +29,14 @@ async function getAnimes(query: string, pageParam: number) {
 
 async function getTrending() {
   const { data } = await fetch(
-    "https://kitsu.io/api/edge/trending/anime?limit=10"
+    `https://kitsu.io/api/edge/trending/anime?limit=10&page[offset]=`
   ).then((res) => res.json());
   return data as AnimeQuery[];
 }
 
 function Home() {
   const [query, setQuery] = useState<string>("");
+
   // initiate react-intersection-observer ref
   const { ref, inView } = useInView();
 
