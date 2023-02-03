@@ -77,7 +77,7 @@ export default function Anime({ anime, characters, relatedAnime }: AnimeProps) {
             "https://www.treehugger.com/thmb/QolJfOYFmxwIH6Sxv5SBqY8Kq-M=/1885x1414/smart/filters:no_upscale()/GettyImages-1273584292-cbcd5f85f4c646d58f7a7fa158dcaaeb.jpg"
           }
         />
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-4 p-2 md:flex-row">
           <div className="flex shrink-0 flex-col gap-4">
             <img
               className="mx-auto aspect-[3/4] w-full"
@@ -131,8 +131,8 @@ export default function Anime({ anime, characters, relatedAnime }: AnimeProps) {
               </div>
             </div>
           </div>
-          <div className="flex grow gap-2 rounded-sm bg-slate-50 p-4 shadow-md">
-            <div className="flex w-2/3 grow flex-col gap-4 text-base">
+          <div className="flex grow flex-col gap-2 rounded-sm bg-slate-50 p-4 shadow-md md:flex-row">
+            <div className="flex grow flex-col gap-4 text-base md:w-2/3">
               <div className="mb-4 text-2xl">
                 {anime.attributes.canonicalTitle}
               </div>

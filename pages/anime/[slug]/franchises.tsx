@@ -89,7 +89,7 @@ export default function Franchises({ anime, franchises }: FranchiseProps) {
         <h1 className="text-2xl">
           {anime.attributes.canonicalTitle} Franchise
         </h1>
-        <div className="flex flex-wrap gap-6">
+        <div className="flex flex-wrap gap-6 p-2 md:p-0">
           {relatedFranchises.map((franchise) => (
             <div key={franchise.id} className="w-56">
               <Link

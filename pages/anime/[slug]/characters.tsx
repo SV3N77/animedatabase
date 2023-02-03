@@ -94,7 +94,7 @@ export default function Characters({ anime, animeCharacters }: CharacterProps) {
         <h1 className="text-2xl">
           {anime.attributes.canonicalTitle} Characters
         </h1>
-        <div className="flex flex-wrap gap-6">
+        <div className="flex flex-wrap gap-6 p-2 md:p-0">
           {characters.map((character) => (
             <div key={character.id}>
               <div className="w-56">

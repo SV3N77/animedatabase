@@ -90,7 +90,7 @@ export default function Characters({ manga, mangaCharacters }: CharacterProps) {
         <h1 className="text-2xl">
           {manga.attributes.canonicalTitle} Characters
         </h1>
-        <div className="flex flex-wrap gap-6">
+        <div className="flex flex-wrap gap-6 p-2 md:p-0">
           {characters.map((character) => (
             <div key={character.id} className="w-56">
               <img

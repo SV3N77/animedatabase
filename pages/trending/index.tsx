@@ -19,7 +19,7 @@ export async function getStaticProps() {
 
 export default function index({ trending }: TrendingProps) {
   return (
-    <section className="container mx-auto flex flex-col gap-4 py-8">
+    <section className="container mx-auto flex flex-col gap-4 p-2 py-8 md:mx-auto">
       <div className="text-2xl">Trending Anime</div>
       <div className="flex flex-wrap gap-8">
         {trending.map((trendAnime) => (
